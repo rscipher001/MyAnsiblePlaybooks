@@ -1,0 +1,27 @@
+---
+# ansible-playbook nvm.yml
+# Can be used for setting nvm on Ubuntu 20.04
+
+- name: setup nvm
+  hosts: "nvm"
+  vars:
+    mysql_root_password: 'ravindra'
+  tasks:
+
+    - name: ensure git and curl are installed
+      become: true
+      apt:
+        name: ['git', 'curl']
+        state: present
+        update_cache: true
+
+    - name: install nvm
+      shell: >
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+      args:
+        creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
+
+    - name: install node 14
+      shell: "source ~/.nvm/nvm.sh && nvm install 14" 
+      args:
+        executable: /bin/bash

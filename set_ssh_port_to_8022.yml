@@ -1,0 +1,19 @@
+---
+# ansible-playbook set_ssh_port_to_8022.yml
+
+- name: Change SSH port
+  hosts: "secure_ssh"
+  tasks:
+    - name: Change SSH port in /etc/ssh/sshd_config
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "^Port"
+        line: "Port 8022"
+    - name: restart SSH
+      become: yes
+      service:
+        name: sshd
+        state: restarted
+    - name: Ensure SSH is reloaded if need be
+      meta: flush_handlers

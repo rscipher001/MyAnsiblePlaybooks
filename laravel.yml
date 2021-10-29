@@ -1,0 +1,33 @@
+---
+# ansible-playbook laravel.yml
+# Can be used for setting up Laravel hosting environment on 20.04 ubuntu
+
+- name: setup laravel environment
+  hosts: "laravel"
+  tasks:
+    - name: update system
+      become: true
+      apt:
+        update_cache: true
+        upgrade: 'yes'
+
+    - name: ensure nginx is installed
+      become: true
+      apt:
+        name: nginx
+        state: present
+        update_cache: true
+
+    - name: ensure php is installed
+      become: true
+      apt:
+        name: ['php','php-mbstring','php-xml','php-bcmath','php-gd','php-zip','php-mysql','php-fpm','php-cgi','php-curl','php-intl','zip']
+        state: present
+        update_cache: true
+
+    - name: disable apache2
+      become: true
+      service:
+        name: apache2
+        state: stopped
+        enabled: no

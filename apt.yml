@@ -1,0 +1,18 @@
+---
+# ansible-playbook apt.yml
+
+- name: run apt
+  hosts: "apt"
+  tasks:
+    - name: update system
+      become: true
+      apt:
+        update_cache: true
+        upgrade: 'yes'
+
+    - name: install zip
+      become: true
+      apt:
+        name: zip
+        state: present
+        update_cache: true

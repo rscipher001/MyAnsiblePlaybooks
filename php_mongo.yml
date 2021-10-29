@@ -1,0 +1,43 @@
+---
+# ansible-playbook php_mongo.yml
+# Install mongodb module in PHP 7.4 on Ubuntu 20.04
+
+- name: setup mongo extension for PHP
+  ignore_errors: yes
+  hosts: "php_mongo"
+  tasks:
+    - name: update system
+      become: true
+      apt:
+        update_cache: true
+        upgrade: 'yes'
+
+    - name: ensure php, php-pear and nginx are installed
+      become: true
+      apt:
+        name: ['php', 'php-pear', 'php-dev']
+        state: present
+        update_cache: true
+      
+    - name: install mongodb extenstion
+      become: true
+      ansible.builtin.command: pecl install mongodb
+
+    - name: add mongodb extenstion in apache php.ini
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/php/7.4/apache2/php.ini
+        line: extension=mongodb.so
+
+    - name: add mongodb extenstion in cli php.ini
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/php/7.4/cli/php.ini
+        line: extension=mongodb.so
+
+    - name: disable apache2
+      become: true
+      service:
+        name: apache2
+        state: stopped
+        enabled: no
